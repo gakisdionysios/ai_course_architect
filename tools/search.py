@@ -6,7 +6,7 @@ from langchain_core.tools import tool
 
 # Tool 1: Wikipedia search.
 @tool
-def search_wikipedia(query: str) -> str:
+def wiki_tool(query: str) -> str:
     """
     Search Wikipedia for encyclopedic background on a topic.
     Best for: definitions, historical facts, established concepts, people, places.
@@ -28,7 +28,7 @@ def search_wikipedia(query: str) -> str:
     
 # Tool 2: Arxiv search
 @tool
-def search_arxiv(query: str) -> str:
+def arxiv_tool(query: str) -> str:
     """
     Search ArXiv for academic papers and research.
     Best for: machine learning, mathematics, physics, computer science, cutting-edge or technical topics.
@@ -54,7 +54,7 @@ def search_arxiv(query: str) -> str:
     
 # Tool 3: Duckduckgo search
 @tool
-def search_duckduckgo(query: str) -> str:
+def search_tool(query: str) -> str:
     """
     Search the web via DuckDuckGo for general information.
     Best for: current events, practical how-to topics, business concepts, pop culture,
@@ -73,5 +73,5 @@ def search_duckduckgo(query: str) -> str:
         return f"DuckDuckGo search failed: {str(e)}"
 
 # Putting all tools together in a list.
-SEARCH_TOOLS = [search_wikipedia, search_arxiv, search_duckduckgo]
+SEARCH_TOOLS = [wiki_tool, arxiv_tool, search_tool]
 
