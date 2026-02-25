@@ -26,9 +26,16 @@ if 'selected_lesson_idx' not in st.session_state:
 
 # SIDEBAR
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/4712/4712009.png", width=50) 
-    st.markdown("## **AI Course Architect**")
-    st.markdown("---")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(
+            "https://cdn-icons-png.flaticon.com/512/4712/4712009.png", 
+            width=100
+        )
+    st.markdown(
+        '<p style="text-align: center; font-weight: bold; margin-top: -10px; margin-left: -20px;">AI Course Architect</p>', 
+        unsafe_allow_html=True
+    )
     
     # Load saved courses from the Database
     existing_courses = get_all_courses()
@@ -131,17 +138,27 @@ else:
         st.markdown(f"##### 📈 Course Progress: {int(progress * 100)}%")
         st.progress(progress)
         
-        
+        prev_lesson_completed = True # The first lesson is always unlocked
         
         # Display Modules and Lessons
         for m_idx, module in enumerate(course['modules']):
             with st.expander(f"📦 {module['title']}"):
                 for l_idx, lesson in enumerate(module['lessons']):
                     
-                    if st.button(lesson['title'], key=f"btn_{m_idx}_{l_idx}"):
-                        st.session_state['selected_module_idx'] = m_idx
-                        st.session_state['selected_lesson_idx'] = l_idx
-                        st.rerun()
+                    is_unlocked = prev_lesson_completed
+                    
+                    if is_unlocked:
+                        if st.button(lesson['title'], key=f"btn_{m_idx}_{l_idx}"):
+                            st.session_state['selected_module_idx'] = m_idx
+                            st.session_state['selected_lesson_idx'] = l_idx
+                            st.rerun()
+                    else:
+                        st.button(f"🔒 {lesson['title']}", key=f"btn_{m_idx}_{l_idx}", disabled=True)
+                        
+                    # Update prev_lesson_completed for the next iteration
+                    prev_lesson_completed = lesson.get('completed', False)
+                    
+
 
     with col_content:
         m_idx = st.session_state['selected_module_idx']
@@ -193,6 +210,7 @@ else:
                 else:
                     st.info("No quiz generated for this lesson yet. The Professor Agent might still be writing it.")
             st.markdown("---")
+            
             # Completion Button
             if not current_lesson.get('completed'):
                 if st.button("✅ Mark Lesson as Completed", type="primary", use_container_width=True):
