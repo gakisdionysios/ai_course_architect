@@ -13,7 +13,7 @@ from agents.llm import LlmFactory  # Now it can find agents module
 load_dotenv()
 
 #temp 0 for strict execution of prompts 
-llm = LlmFactory(mode="groq",temperature=0).get_llm()
+llm = LlmFactory(mode="azure",temperature=0).get_llm()
 
 
 
@@ -107,7 +107,7 @@ def create_course_in_db(topic: str):
     print(f"✅ Course '{topic}' created successfully!")
 
 
-create_course_in_db("Physics")
+# create_course_in_db("Physics")
 
 
 

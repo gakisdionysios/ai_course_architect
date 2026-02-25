@@ -38,7 +38,6 @@ def librarian_node(state, llm):
     WHERE c.title CONTAINS $course_title 
       AND (l.research_notes IS NULL OR l.research_notes = "")
     RETURN l.title as title, c.title as course_name
-    LIMIT 3
     """ 
     lessons_to_research = run_cypher(pending_query, {"course_title": topic_from_state})
     if not lessons_to_research:
