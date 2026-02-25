@@ -8,8 +8,8 @@ from langchain_core.tools import tool
 @tool
 def wiki_tool(query: str) -> str:
     """
-    Search Wikipedia for encyclopedic background on a topic.
-    Best for: definitions, historical facts, established concepts, people, places.
+    If the lesson is about history, definitions, standard concepts, or famous people
+    search Wikipedia for encyclopedic background on a topic.
     """
     try:
         wikipedia.set_lang("en")
@@ -30,8 +30,8 @@ def wiki_tool(query: str) -> str:
 @tool
 def arxiv_tool(query: str) -> str:
     """
-    Search ArXiv for academic papers and research.
-    Best for: machine learning, mathematics, physics, computer science, cutting-edge or technical topics.
+    If the lesson is about deep learning architectures, quantum physics, math theorems, or bleeding-edge research,
+    search ArXiv for academic papers and research.
     """
     try:
         client = arxiv.Client()
@@ -56,6 +56,7 @@ def arxiv_tool(query: str) -> str:
 @tool
 def search_tool(query: str) -> str:
     """
+     For EVERYTHING else. Especially: "How to install...", "Best practices for...", "Current events", "Code examples".
     Search the web via DuckDuckGo for general information.
     Best for: current events, practical how-to topics, business concepts, pop culture,
     anything too recent or niche for Wikipedia or ArXiv.
