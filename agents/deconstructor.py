@@ -2,11 +2,8 @@ import os
 import sys
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agents.llm import LlmFactory  # Now it can find agents module
+from agents.llm import LlmFactory  
 
 
 
@@ -17,10 +14,10 @@ llm = LlmFactory(mode="azure",temperature=0).get_llm()
 
 
 
-# Connect to Local Neo4j
+# Connect to Local Neo4j Database
 uri = os.getenv("NEO4J_URI", "bolt://localhost:7687")
 user = os.getenv("NEO4J_USERNAME", "neo4j")
-password = os.getenv("NEO4J_PASSWORD", "password") # Change this!
+password = os.getenv("NEO4J_PASSWORD", "password")
 
 driver = GraphDatabase.driver(uri, auth=(user, password))
 
@@ -107,7 +104,52 @@ def create_course_in_db(topic: str):
     print(f"✅ Course '{topic}' created successfully!")
 
 
-# create_course_in_db("Physics")
+def get_full_course_data(course_title):
+    """
+    Queries Neo4j to build the full nested JSON for the UI.
+    """
+    query = """
+    MATCH (c:Course)-[:HAS_MODULE]->(m:Module)-[:HAS_LESSON]->(l:Lesson)
+    WHERE c.title CONTAINS $title
+    RETURN m.title as module_title, 
+           l.title as lesson_title, 
+           l.content_text as text, 
+           l.video_script as script,
+           l.quiz_json as quiz_data,
+           l.completed as completed
+    ORDER BY m.title, l.title
+    """
+    results = run_cypher(query, {"title": course_title})
+    
+    if not results:
+        return None
+
+    # Reconstruct nested JSON
+    course_data = {
+        "course_title": course_title,
+        "description": "AI-Generated Professional Curriculum",
+        "modules": []
+    }
+
+    modules_dict = {}
+    for row in results:
+        m_title = row['module_title']
+        if m_title not in modules_dict:
+            modules_dict[m_title] = {"title": m_title, "lessons": []}
+            course_data["modules"].append(modules_dict[m_title])
+        
+        modules_dict[m_title]["lessons"].append({
+            "title": row['lesson_title'],
+            "content": {
+                "text": row['text'] or "Content is being generated...",
+                "video_script": row['script'] or "Script is being generated...",
+                "quiz_json": row['quiz_data']
+            },
+            "completed": row['completed']
+        })
+    
+    return course_data
+
 
 
 
