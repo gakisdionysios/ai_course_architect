@@ -1,4 +1,3 @@
-version: '3'
 neo4j-db:
     image: neo4j:5-community
     container_name: neo4j-db
