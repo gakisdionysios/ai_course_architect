@@ -1,9 +1,12 @@
 import streamlit as st
 import time
 import json
+from workflow.workflow import langgraph_app
+from agents.deconstructor import get_full_course_data
 
 
 st.set_page_config(page_title="AI Course Architect", layout="wide", page_icon="🎓")
+st.set_page_config(layout="wide")
 
 def load_css(file_name):
     with open(file_name) as f:
@@ -12,56 +15,7 @@ def load_css(file_name):
 # Load the external CSS file
 load_css("assets/style.css")
 
-# ==========================================
-# 1. MOCK BACKEND
-# ==========================================
-def generate_dummy_course(topic):
-    """
-    This function simulates the entire LangGraph process.
-    """
-    time.sleep(1.5) # Simulate AI "thinking"
-    
-    return {
-        "course_title": f"Mastering {topic}: From Zero to Hero",
-        "description": "A comprehensive AI-generated curriculum designed to take you from beginner to expert.",
-        "modules": [
-            {
-                "title": "Module 1: Foundations",
-                "lessons": [
-                    {
-                        "title": "1.1 The Core Concepts",
-                        "content": {
-                            "text": f"### Introduction to {topic}\n\n**{topic}** is a fundamental concept in modern systems. In this lesson, we explore the history and basic definitions.\n\n#### Key Takeaways\n* Understanding the 'Why' before the 'How'\n* Historical context and evolution\n* Core terminology definition\n\n> \"Complexity is the enemy of execution.\" - Tony Robbins",
-                            "video_script": f"**[Scene: Modern studio background, Host looks at camera]**\n\nHOST: Welcome back! Today we are talking about {topic}. It might sound scary, but it's actually quite simple...\n\n(Cut to B-Roll of diagrams)\n\nHOST: Let's break it down."
-                        }
-                    },
-                    {
-                        "title": "1.2 Setting Up Your Environment",
-                        "content": {
-                            "text": "### Getting Started\n\nTo work with this technology, you need to install the following tools:\n\n1. **VS Code**: Your code editor.\n2. **Docker**: For containerization.\n3. **Python 3.10+**: The runtime.\n\n```bash\npip install dependency-x --upgrade\n```",
-                            "video_script": "**[Scene: Screen recording of terminal]**\n\nHOST: Open your terminal and type the command you see on screen."
-                        }
-                    }
-                ]
-            },
-            {
-                "title": "Module 2: Advanced Techniques",
-                "lessons": [
-                    {
-                        "title": "2.1 Scaling Up",
-                        "content": {
-                            "text": "### How to Scale\n\nWhen your application grows, you need to consider **horizontal** vs **vertical** scaling.\n\n* **Horizontal**: Adding more machines.\n* **Vertical**: Adding more power to one machine.",
-                            "video_script": "**[Scene: Animation of servers multiplying]**\n\nHOST: Think of horizontal scaling like hiring more workers, while vertical scaling is like training one worker to be stronger."
-                        }
-                    }
-                ]
-            }
-        ]
-    }
 
-# ==========================================
-# 2. SESSION STATE
-# ==========================================
 if 'course_data' not in st.session_state:
     st.session_state['course_data'] = None
 if 'selected_module_idx' not in st.session_state:
@@ -69,54 +23,68 @@ if 'selected_module_idx' not in st.session_state:
 if 'selected_lesson_idx' not in st.session_state:
     st.session_state['selected_lesson_idx'] = 0
 
-# ==========================================
-# 3. SIDEBAR
-# ==========================================
+
+# SIDEBAR
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/4712/4712009.png", width=50) # Placeholder Icon
+    st.image("https://cdn-icons-png.flaticon.com/512/4712/4712009.png", width=50) 
     st.markdown("## **AI Course Architect**")
-    st.caption("v1.0 Hackathon Build")
     st.markdown("---")
     
     topic_input = st.text_input("Enter a Topic:", placeholder="e.g. Quantum Physics...")
     
+    if st.session_state['course_data'] is None:
+        st.info("☝️ **Step 1:** Enter any topic you want to learn about above.")
+        st.warning("🚀 **Step 2:** Click the button below to create your course.")
+        
     if st.button("🚀 Generate Course", type="primary"):
         if topic_input:
-            with st.spinner(f"Agents are researching '{topic_input}'..."):
-                st.session_state['course_data'] = generate_dummy_course(topic_input)
-                # Reset selection
+            with st.status("🛸 Deploying AI Agents...", expanded=True) as status_box:            
+            # Prepare inputs for LangGraph
+                inputs = {"topic": topic_input}
+                
+                # Run the graph and stream the node updates
+                # 'langgraph_app' is the compiled workflow from workflow.py
+                for output in langgraph_app.stream(inputs):
+                    for node_name, metadata in output.items():
+                        if node_name == "deconstructor":
+                            st.write("🏗️ **Deconstructor:** Curriculum skeleton mapped to Neo4j.")
+                            status_box.update(label="📚 Researching Knowledge...", state="running")
+                            
+                        elif node_name == "librarian":
+                            st.write("🔍 **Librarian:** Scouring Wikipedia & ArXiv for facts.")
+                            status_box.update(label="✍️ Drafting Content...", state="running")
+                            
+                        elif node_name == "professor":
+                            st.write("🎓 **Professor:** Generating lessons, scripts, and quizzes.")
+                            status_box.update(label="✨ Finalizing Course...", state="running")
+
+                # Final update when loop ends
+                status_box.update(label="✅ Course Architected Successfully!", state="complete", expanded=False)
+               
+        # Pull the newly created course data from Neo4j to display in the UI
+        with st.spinner("Loading your personalized classroom..."):
+            course_data = get_full_course_data(topic_input)
+            
+            if course_data:
+                st.session_state['course_data'] = course_data
                 st.session_state['selected_module_idx'] = 0
                 st.session_state['selected_lesson_idx'] = 0
+                # Re-render the page with the new course data
                 st.rerun()
-        else:
-            st.warning("Please enter a topic first.")
+            else:
+                st.error("Agents failed to save data to Neo4j. Check console logs.")
 
-    st.markdown("---")
-    with st.expander("🛠 System Status"):
-        st.success("Neo4j: Connected")
-        st.success("Ollama (Llama3): Active")
-        st.info("LangGraph: Ready")
 
-# ==========================================
-# 4. MAIN DISPLAY LOGIC
-# ==========================================
+# MAIN DISPLAY LOGIC
 if st.session_state['course_data'] is None:
     # Welcome Screen with Modern Layout
     st.markdown('<p class="gradient-text">The AI Course Architect</p>', unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1.5, 1.5])
     with col1:
-        st.markdown('<div style="height: 150px;"></div>', unsafe_allow_html=True)
-        st.info("👈 **Start Here:** Enter a topic in the sidebar to launch the agents.")
-    with col2:
         st.markdown("""
         ### 🤖 Transforming Knowledge into Curriculum
         Welcome to the future of education. This tool uses a swarm of autonomous AI agents to research, structure, and generate complete courses on **any topic** in seconds.
-        
-        **Powered by:**
-        * 🕸️ **Neo4j** Graph Database
-        * 🦜 **LangChain** & **LangGraph**
-        * 🦙 **Ollama** Local LLMs
         """)
 
 
@@ -124,44 +92,36 @@ else:
     # Data is loaded - Show the Course Interface
     course = st.session_state['course_data']
     
-    # Header
     st.markdown(f'<h1 style="color: #FAFAFA;">{course["course_title"]}</h1>', unsafe_allow_html=True)
-    st.markdown(f"*{course['description']}*")
+    st.markdown(f"*{course.get('description', 'AI-Generated Professional Curriculum')}*")
     st.markdown("---")
     
-    # Layout: 1 Column Nav (Cards), 3 Column Content
-    col_nav, col_content = st.columns([1, 2.5])
+    col_nav, col_content = st.columns([0.8, 2.5])
 
     with col_nav:
         st.subheader("📚 Curriculum")
+        st.markdown('<div style="margin-top: -20px; margin-bottom: -20px;"><hr></div>', unsafe_allow_html=True)
         
-        # NAVIGATION LOGIC
+        # Display Modules and Lessons
         for m_idx, module in enumerate(course['modules']):
-            # We use Expanders to look like "Modules"
-            with st.expander(f"📦 {module['title']}", expanded=(m_idx == st.session_state['selected_module_idx'])):
+            with st.expander(f"📦 {module['title']}"):
                 for l_idx, lesson in enumerate(module['lessons']):
-                    # Stylized selection
-                    is_selected = (m_idx == st.session_state['selected_module_idx'] and l_idx == st.session_state['selected_lesson_idx'])
-                    btn_label = f"📍 {lesson['title']}" if is_selected else lesson['title']
                     
-                    if st.button(btn_label, key=f"btn_{m_idx}_{l_idx}", use_container_width=True):
+                    if st.button(lesson['title'], key=f"btn_{m_idx}_{l_idx}"):
                         st.session_state['selected_module_idx'] = m_idx
                         st.session_state['selected_lesson_idx'] = l_idx
                         st.rerun()
 
     with col_content:
-        # Get the currently selected lesson
         m_idx = st.session_state['selected_module_idx']
         l_idx = st.session_state['selected_lesson_idx']
         
         current_module = course['modules'][m_idx]
         current_lesson = current_module['lessons'][l_idx]
 
-        # Content Card
         with st.container():
             st.markdown(f"### 📖 {current_lesson['title']}")
             
-            # Tabs for different content formats
             tab1, tab2, tab3 = st.tabs(["📝 Reading Material", "🎬 Video Script", "🧠 Interactive Quiz"])
 
             with tab1:
@@ -172,5 +132,33 @@ else:
                 st.code(current_lesson['content']['video_script'], language="markdown")
                 
             with tab3:
-                st.warning("Construction in progress by Agent 'Professor'...")
-                st.progress(0.4)
+                st.subheader("Knowledge Check")
+                quiz_data_raw = current_lesson['content'].get('quiz_json')
+                
+                if quiz_data_raw:
+                    try:
+                        if isinstance(quiz_data_raw, str):
+                            quiz_list = json.loads(quiz_data_raw)
+                        else:
+                            quiz_list = quiz_data_raw
+                            
+                        for i, q in enumerate(quiz_list):
+                            st.markdown(f"**Q{i+1}: {q['question']}**")
+                            user_choice = st.radio(
+                                f"Select answer for Q{i+1}:", 
+                                q['options'], 
+                                key=f"quiz_{m_idx}_{l_idx}_{i}"
+                            )
+                            
+                            if st.button(f"Check Answer {i+1}", key=f"check_{m_idx}_{l_idx}_{i}"):
+                                if user_choice == q['answer']:
+                                    st.success("Correct! 🎉")
+                                else:
+                                    st.error(f"Incorrect. The right answer was: {q['answer']}")
+                            st.markdown("---")
+                    except Exception as e:
+                        st.warning("Quiz format error. The Professor is still learning!")
+                        st.caption(f"Error details: {e}")
+                else:
+                    st.info("No quiz generated for this lesson yet. The Professor Agent might still be writing it.")
+            st.markdown("---")

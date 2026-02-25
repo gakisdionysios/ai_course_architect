@@ -68,15 +68,4 @@ workflow.add_edge("professor", END)
  
 # Compile
  
-app = workflow.compile()
- 
-initial_state = {
-    "topic": "How to peel a banana",  # <- Your input here
-    "course_title": "",
-    "lessons_processed": [],
-    "current_status": "starting"
-}
- 
-# Invoke the graph
-result = app.invoke(initial_state)
-print(result)
+langgraph_app = workflow.compile()
