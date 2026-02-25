@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import json
 from workflow.workflow import langgraph_app
-from agents.deconstructor import get_full_course_data
+from agents.deconstructor import get_full_course_data, get_all_courses, mark_lesson_completed
 
 
 st.set_page_config(page_title="AI Course Architect", layout="wide", page_icon="🎓")
@@ -26,9 +26,37 @@ if 'selected_lesson_idx' not in st.session_state:
 
 # SIDEBAR
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/4712/4712009.png", width=50) 
-    st.markdown("## **AI Course Architect**")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image(
+            "https://cdn-icons-png.flaticon.com/512/4712/4712009.png", 
+            width=100
+        )
+    st.markdown(
+        '<p style="text-align: center; font-weight: bold; margin-top: -10px; margin-left: -20px;">AI Course Architect</p>', 
+        unsafe_allow_html=True
+    )
+    
+    # Load saved courses from the Database
+    existing_courses = get_all_courses()
+    if existing_courses:
+        st.subheader("📂 Your Library")
+        selected_old_course = st.selectbox(
+            "Load a previous course:",
+            options=["-- Select --"] + existing_courses
+        )
+        
+        if selected_old_course != "-- Select --":
+            if st.button("Load Course"):
+                with st.spinner("Retrieving from Database..."):
+                    st.session_state['course_data'] = get_full_course_data(selected_old_course)
+                    st.session_state['selected_module_idx'] = 0
+                    st.session_state['selected_lesson_idx'] = 0
+                    st.rerun()
+    
     st.markdown("---")
+    
+    
     
     topic_input = st.text_input("Enter a Topic:", placeholder="e.g. Quantum Physics...")
     
@@ -102,15 +130,35 @@ else:
         st.subheader("📚 Curriculum")
         st.markdown('<div style="margin-top: -20px; margin-bottom: -20px;"><hr></div>', unsafe_allow_html=True)
         
+        # Calculate overall progress and visualize progress bar
+        all_lessons = [l for m in course['modules'] for l in m['lessons']]
+        completed_lessons = [l for l in all_lessons if l.get('completed')]
+        progress = len(completed_lessons) / len(all_lessons) if all_lessons else 0
+        
+        st.markdown(f"##### 📈 Course Progress: {int(progress * 100)}%")
+        st.progress(progress)
+        
+        prev_lesson_completed = True # The first lesson is always unlocked
+        
         # Display Modules and Lessons
         for m_idx, module in enumerate(course['modules']):
             with st.expander(f"📦 {module['title']}"):
                 for l_idx, lesson in enumerate(module['lessons']):
                     
-                    if st.button(lesson['title'], key=f"btn_{m_idx}_{l_idx}"):
-                        st.session_state['selected_module_idx'] = m_idx
-                        st.session_state['selected_lesson_idx'] = l_idx
-                        st.rerun()
+                    is_unlocked = prev_lesson_completed
+                    
+                    if is_unlocked:
+                        if st.button(lesson['title'], key=f"btn_{m_idx}_{l_idx}"):
+                            st.session_state['selected_module_idx'] = m_idx
+                            st.session_state['selected_lesson_idx'] = l_idx
+                            st.rerun()
+                    else:
+                        st.button(f"🔒 {lesson['title']}", key=f"btn_{m_idx}_{l_idx}", disabled=True)
+                        
+                    # Update prev_lesson_completed for the next iteration
+                    prev_lesson_completed = lesson.get('completed', False)
+                    
+
 
     with col_content:
         m_idx = st.session_state['selected_module_idx']
@@ -162,3 +210,15 @@ else:
                 else:
                     st.info("No quiz generated for this lesson yet. The Professor Agent might still be writing it.")
             st.markdown("---")
+            
+            # Completion Button
+            if not current_lesson.get('completed'):
+                if st.button("✅ Mark Lesson as Completed", type="primary", use_container_width=True):
+                    mark_lesson_completed(current_lesson['title'])
+                    updated_data = get_full_course_data(course["course_title"])
+                    st.session_state['course_data'] = updated_data
+                    st.success("Lesson Completed! Next lesson unlocked.")
+                    time.sleep(1) # Give the user a moment to see the success
+                    st.rerun()
+            else:
+                st.success("🌟 You have finished this lesson!")

@@ -52,7 +52,7 @@ def generate_course_cypher(topic: str) -> str:
     - **Nodes**:
       - `(:Course {{title: "..."}})`
       - `(:Module {{title: "...", order_index: int}})`
-      - `(:Lesson {{title: "...", order_index: int}})`
+      - `(:Lesson {{title: "...", order_index: int, status: "pending", completed: false}})`
     
     - **Relationships**:
       - `(:Course)-[:HAS_MODULE]->(:Module)`
@@ -79,7 +79,7 @@ def generate_course_cypher(topic: str) -> str:
     MERGE (c)-[:HAS_MODULE]->(m1)
     MERGE (c)-[:HAS_MODULE]->(m2)
     MERGE (m1)-[:NEXT_MODULE]->(m2)
-    MERGE (l1:Lesson {{title: "L1", order_index: 1"}})
+    MERGE (l1:Lesson {{title: "L1", order_index: 1, status: "pending", completed: false}})
     MERGE (m1)-[:HAS_LESSON]->(l1)
     """
 
@@ -145,11 +145,24 @@ def get_full_course_data(course_title):
                 "video_script": row['script'] or "Script is being generated...",
                 "quiz_json": row['quiz_data']
             },
-            "completed": row['completed']
+            "completed": row['completed'] # This field is used to track lesson completion in the UI
         })
     
     return course_data
 
 
+# Ability to fetch all courses from the dropdown in the UI
+def get_all_courses():
+    """Returns a list of all course titles saved in Neo4j."""
+    query = "MATCH (c:Course) RETURN c.title as title"
+    results = run_cypher(query)
+    return [row['title'] for row in results] if results else []
 
 
+# Utility to mark a lesson as completed in the UI
+def mark_lesson_completed(lesson_title):
+    query = """
+    MATCH (l:Lesson {title: $title})
+    SET l.completed = true
+    """
+    run_cypher(query, {"title": lesson_title})
