@@ -72,5 +72,5 @@ def librarian_node(state, llm):
         results_log.append(f"Researched '{lesson_title}' using {source_used}")
  
     state["research_log"] = results_log
-    print(state)
+    return state
 
