@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import json
 from workflow.workflow import langgraph_app
-from agents.deconstructor import get_full_course_data
+from agents.deconstructor import get_full_course_data, get_all_courses
 
 
 st.set_page_config(page_title="AI Course Architect", layout="wide", page_icon="🎓")
@@ -29,6 +29,27 @@ with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/4712/4712009.png", width=50) 
     st.markdown("## **AI Course Architect**")
     st.markdown("---")
+    
+    # Load saved courses from the Database
+    existing_courses = get_all_courses()
+    if existing_courses:
+        st.subheader("📂 Your Library")
+        selected_old_course = st.selectbox(
+            "Load a previous course:",
+            options=["-- Select --"] + existing_courses
+        )
+        
+        if selected_old_course != "-- Select --":
+            if st.button("Load Course"):
+                with st.spinner("Retrieving from Neo4j..."):
+                    st.session_state['course_data'] = get_full_course_data(selected_old_course)
+                    st.session_state['selected_module_idx'] = 0
+                    st.session_state['selected_lesson_idx'] = 0
+                    st.rerun()
+    
+    st.markdown("---")
+    
+    
     
     topic_input = st.text_input("Enter a Topic:", placeholder="e.g. Quantum Physics...")
     
