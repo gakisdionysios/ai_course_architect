@@ -1,7 +1,7 @@
 import os
 import sys
 from dotenv import load_dotenv
-from neo4j import GraphDatabase
+from database import connect_to_neo4j
 
 from agents.llm import LlmFactory  
 
@@ -10,18 +10,9 @@ from agents.llm import LlmFactory
 load_dotenv()
 
 #temp 0 for strict execution of prompts 
-llm = LlmFactory(mode="azure",temperature=0).get_llm()
+llm = LlmFactory(mode="local",temperature=0).get_llm()
 
-
-
-# Connect to Local Neo4j Database
-uri = os.getenv("NEO4J_URI", "bolt://localhost:7687")
-user = os.getenv("NEO4J_USERNAME", "neo4j")
-password = os.getenv("NEO4J_PASSWORD", "password")
-
-driver = GraphDatabase.driver(uri, auth=(user, password))
-
-
+driver = connect_to_neo4j()
 
 def run_cypher(query: str, parameters=None): 
     """Executes the raw Cypher query against the NEO4J database."""
@@ -46,7 +37,7 @@ def generate_course_cypher(topic: str) -> str:
     
     ### TASK
     Design a professional, logical curriculum for the topic: "{topic}".
-    The course should have 5 Modules, and each Module should contain 5 Lessons.
+    The course should have 3 Modules, and each Module should contain 3 Lessons.
 
     ### GRAPH SCHEMA REQUIREMENTS
     - **Nodes**:
