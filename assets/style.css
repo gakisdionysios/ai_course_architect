@@ -140,3 +140,85 @@ p, li {
     border-radius: 5px 5px 0px 0px;
     padding: 10px 20px;
 }
+
+/* Update the selector that matches your 0.05 opacity cards */
+div[style*="background: rgba(255, 255, 255, 0.05)"] {
+    min-height: 180px;       /* Forces the cards to be longer */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers text vertically if it's short */
+    padding: 30px 25px !important; /* Increases the internal "breathability" */
+    margin-bottom: 20px !important;
+    transition: all 0.3s ease;
+}
+
+/* Add a subtle glow on hover to emphasize the length */
+div[style*="background: rgba(255, 255, 255, 0.05)"]:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: translateY(-5px); /* Lift effect instead of just sliding */
+    box-shadow: 0 10px 20px rgba(0, 201, 255, 0.1);
+}
+
+
+/* Normalizes height and padding for Info and Warning boxes */
+div[data-testid="stNotification"] {
+    min-height: 45px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    display: flex;
+    align-items: center;
+}
+
+/* Ensures the text input box matches the alert box height */
+.stTextInput > div > div > input {
+    height: 45px !important;
+}
+
+/* Ensures the button matches the alert box height */
+div.stButton > button {
+    height: 45px !important;
+}
+
+/* 1. Target the button container inside the main column */
+[data-testid="column"] [data-testid="stBaseButton-secondary"],
+[data-testid="column"] [data-testid="stBaseButton-primary"] {
+    height: auto !important;
+    min-height: 45px !important;
+    padding: 8px 12px !important;
+    width: 100% !important;
+    display: block !important; /* Changes from flex to block to allow natural wrapping */
+}
+
+/* 2. Target the paragraph tag inside the button to force wrapping */
+[data-testid="column"] button div p {
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-align: left !important;
+    line-height: 1.4 !important;
+    font-size: 0.9rem !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+}
+
+/* 3. Style the "Locked" state to ensure it wraps too */
+[data-testid="column"] button:disabled div p {
+    color: rgba(255, 255, 255, 0.4) !important;
+    white-space: normal !important;
+}
+
+/* Force all buttons in the main column to be large and wrap text */
+[data-testid="column"] button {
+    min-height: 80px !important; /* Forces a large default size */
+    padding: 10px !important;
+    white-space: normal !important;
+}
+
+/* Force the text inside the button to wrap and align left */
+[data-testid="column"] button div p {
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-align: left !important;
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+}
