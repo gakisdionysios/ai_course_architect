@@ -1,0 +1,21 @@
+# Python ignore
+__pycache__/
+.venv/
+env/
+venv/
+.env
+.pytest_cache/
+
+# Docker ignore
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Git ignore
+.git
+.gitignore
+
+# Data & OS junk
+neo4j/data/
+neo4j/logs/
+.DS_Store

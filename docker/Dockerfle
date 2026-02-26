@@ -1,0 +1,33 @@
+# Use an official Python runtime as a parent image
+FROM python:3.13.7-slim
+
+# Install uv binary from the official image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Install system dependencies for potential C-extensions or network tools
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the requirements file into the container
+COPY pyproject.toml .
+COPY uv.lock .
+
+# Install Python dependencies
+RUN uv sync --frozen --no-install-project --no-dev
+
+# Copy the rest of the application code
+COPY . .
+
+RUN uv sync --frozen --no-dev
+
+# Expose the Streamlit port (default is 8501)
+EXPOSE 8501
+
+# Command to run the application
+CMD ["uv", "run", "streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
