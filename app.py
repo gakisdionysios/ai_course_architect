@@ -5,7 +5,7 @@ from workflow.workflow import langgraph_app
 from agents.deconstructor import get_full_course_data, get_all_courses, mark_lesson_completed
 
 
-st.set_page_config(page_title="AI Course Architect", layout="wide", page_icon="🎓", initial_sidebar_state="expanded")
+st.set_page_config(page_title="AI-demy", layout="wide", page_icon="🎓", initial_sidebar_state="expanded")
 
 def load_css(file_name):
     # Added encoding="utf-8" to handle special characters and icons
@@ -33,7 +33,7 @@ with st.sidebar:
             width=100
         )
     st.markdown(
-        '<p style="text-align: center; font-weight: bold; margin-top: -20px; margin-bottom: -10px; margin-left: -20px;">AI Course Architect</p>', 
+        '<p style="text-align: center; font-weight: bold; margin-top: -20px; margin-bottom: -10px; margin-left: -20px;">AI-demy</p>', 
         unsafe_allow_html=True
     )
     
@@ -121,7 +121,7 @@ if st.session_state['course_data'] is None:
     st.markdown("""
         <div style="text-align: center; margin-top: -30px; padding-bottom: 20px;">
             <h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 0px;">
-                The AI Course Architect
+                AI-demy
             </h1>
             <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
                 <hr style="flex-grow: 1; border: none; border-top: 1px solid rgba(0, 255, 255, 0.2);">
