@@ -35,9 +35,9 @@ def professor_node(state, llm):
         # We use one prompt to encourage context consistency
         prompt = ChatPromptTemplate.from_template("""
         You are an EXPERT EDUCATOR. Based on the research notes provided, generate:
-        1. A clear, engaging Markdown lesson (under 300 words).
+        1. A clear, engaging Markdown lesson (under 1500 words).
         2. A 1-minute video script with visual cues.
-        3. A 3-question multiple-choice quiz.
+        3. A 3-question multiple-choice quiz, based on Markdown lesson you created.
  
         Research Notes: {notes}
         Lesson Title: {title}

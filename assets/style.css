@@ -1,224 +1,251 @@
-/* 1. Main Background & Text adjustments */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+/* Main Background & Text adjustments */
 .stApp {
-    background-color: #0E1117;
-    color: #FAFAFA;
+    background: radial-gradient(circle at top right, #0a1128, #050811);
+    color: #e2e8f0;
+    font-family: 'Outfit', sans-serif !important;
 }
 
-/* Glassmorphism Effect for containers */
-[data-testid="stVerticalBlock"] > div:has(div.stMarkdown) {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 15px;
-    padding: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+/* Base typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+li,
+ul {
+    font-family: 'Outfit', sans-serif;
 }
 
-/* 2. Custom Gradient Title */
+/* Glassmorphism for Main Blocks (Streamlit vertical blocks) */
+[data-testid="stVerticalBlock"]>div:has(div.stMarkdown) {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Glowing text gradients */
 .gradient-text {
-    background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%);
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 3rem !important;
+    color: transparent;
+    font-size: 4rem !important;
     font-weight: 800;
+    letter-spacing: -1px;
+    filter: drop-shadow(0 0 20px rgba(79, 172, 254, 0.4));
 }
 
-/* 3. Card Styling for Modules */
-div[data-testid="stExpander"] {
-    background-color: #262730;
-    border-radius: 10px;
-    border: 1px solid #4B4EFC;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-/* 4. Sidebar Styling */
+/* Sidebar Ultra-Modern Glass */
 section[data-testid="stSidebar"] {
-    background-color: #161B22;
-    border-right: 1px solid #30363D;
+    background: rgba(10, 15, 30, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* 5. Custom Button Styling */
-div.stButton > button {
-    background: linear-gradient(90deg, #0c5389 0%, #09536e 100%);
+/* Custom Primary Button */
+div.stButton>button[kind="primary"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+    height: 50px !important;
+}
+
+div.stButton>button[kind="primary"]:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(118, 75, 162, 0.6);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Custom Secondary Button */
+div.stButton>button:not([kind="primary"]) {
+    background: rgba(255, 255, 255, 0.04);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     font-weight: 600;
     transition: all 0.3s ease;
 }
-div.stButton > button:hover {
+
+div.stButton>button:not([kind="primary"]):hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(125, 86, 244, 0.5);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* 6. Tab Styling */
-.stTabs [data-baseweb="tab-list"] {
-    gap: 2px;
-    background-color: transparent;
-}
-.stTabs [data-baseweb="tab"] {
-    background-color: #262730;
-    border-radius: 4px 4px 0 0;
-    color: #ccc;
-}
-.stTabs [aria-selected="true"] {
-    background-color: #7D56F4 !important;
+/* Input Fields (Text Input, Selectbox) */
+.stTextInput>div>div>input {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     color: white !important;
+    border-radius: 10px !important;
+    padding: 12px 16px !important;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-button[kind="primary"]:hover {
-    transform: scale(1.02);
+.stSelectbox>div>div>div {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border-radius: 10px !important;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Styling for the info cards we built in HTML */
-div[style*="background: rgba(255, 255, 255, 0.05)"] {
-    transition: transform 0.3s ease, background 0.3s ease;
+.stTextInput>div>div>input:focus,
+.stSelectbox>div>div>div:focus {
+    border-color: #4facfe !important;
+    box-shadow: 0 0 0 2px rgba(79, 172, 254, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
-div[style*="background: rgba(255, 255, 255, 0.05)"]:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    transform: translateX(10px);
-    cursor: default;
-}
-
-/* Fix for standard text to look sharper */
-p, li {
-    line-height: 1.6;
-    letter-spacing: 0.3px;
-}
-
-/* 1. Hide the top-right Streamlit menu and 'Deploy' button to save space */
-/* [data-testid="stHeader"] {
-    display: none !important;
-} */
-
-/* 2. Remove the padding at the top of the main content area */
-.block-container {
-    padding-top: 1rem !important;
-    padding-bottom: 0rem !important;
-}
-
-/* 3. Hide the anchor link icon next to headers (the 🔗) */
-.stMarkdown h1 a, .stMarkdown h2 a, .stMarkdown h3 a {
-    display: none !important;
-}
-
-/* 4. Tighten up the gap between the header and the sidebar top */
-[data-testid="stAppViewContainer"] {
-    padding-top: 0px !important;
-}
-
-
-/* Styling for the Course Navigation Column */
-[data-testid="stVerticalBlock"] > div:has(div.stExpander) {
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 10px;
-    padding: 10px;
-}
-
-/* Make Expanders look like modern cards */
-.streamlit-expanderHeader {
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    border-radius: 8px !important;
-    border: 1px solid rgba(0, 255, 255, 0.1) !important;
-}
-
-/* Content Container styling */
-.main-content-card {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 25px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-/* Custom Tab Styling */
+/* Tabs */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 10px;
+    gap: 15px;
+    background-color: transparent;
+    padding-bottom: 5px;
 }
 
 .stTabs [data-baseweb="tab"] {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 5px 5px 0px 0px;
-    padding: 10px 20px;
-}
-
-/* Update the selector that matches your 0.05 opacity cards */
-div[style*="background: rgba(255, 255, 255, 0.05)"] {
-    min-height: 180px;       /* Forces the cards to be longer */
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Centers text vertically if it's short */
-    padding: 30px 25px !important; /* Increases the internal "breathability" */
-    margin-bottom: 20px !important;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px 12px 0 0;
+    color: #94a3b8;
+    padding: 12px 24px;
     transition: all 0.3s ease;
+    font-weight: 600;
 }
 
-/* Add a subtle glow on hover to emphasize the length */
-div[style*="background: rgba(255, 255, 255, 0.05)"]:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
-    transform: translateY(-5px); /* Lift effect instead of just sliding */
-    box-shadow: 0 10px 20px rgba(0, 201, 255, 0.1);
+.stTabs [data-baseweb="tab"]:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
 }
 
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(0, 242, 254, 0.2)) !important;
+    border-color: rgba(79, 172, 254, 0.4) !important;
+    border-bottom: 2px solid #4facfe !important;
+    color: #4facfe !important;
+}
 
-/* Normalizes height and padding for Info and Warning boxes */
+/* Hide Default Streamlit Elements */
+header[data-testid="stHeader"] {
+    background: transparent !important;
+}
+
+.stDeployButton {
+    display: none !important;
+}
+
+/* Expander/Accordions (Modules) */
+.streamlit-expanderHeader {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+.streamlit-expanderHeader:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(79, 172, 254, 0.3) !important;
+}
+
+/* Progress bar styling */
+.stProgress>div>div>div>div {
+    background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
+    box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+    border-radius: 10px;
+}
+
+/* Warning & Info Boxes */
 div[data-testid="stNotification"] {
-    min-height: 45px !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    display: flex;
-    align-items: center;
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+    color: #e2e8f0 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Ensures the text input box matches the alert box height */
-.stTextInput > div > div > input {
-    height: 45px !important;
+/* Info Box */
+div[data-testid="stNotification"]:has(> div > svg[color="info"]) {
+    border-left: 4px solid #4facfe !important;
 }
 
-/* Ensures the button matches the alert box height */
-div.stButton > button {
-    height: 45px !important;
+/* Warning Box */
+div[data-testid="stNotification"]:has(> div > svg[color="warning"]) {
+    border-left: 4px solid #f6d365 !important;
 }
 
-/* 1. Target the button container inside the main column */
-[data-testid="column"] [data-testid="stBaseButton-secondary"],
-[data-testid="column"] [data-testid="stBaseButton-primary"] {
-    height: auto !important;
-    min-height: 45px !important;
-    padding: 8px 12px !important;
-    width: 100% !important;
-    display: block !important; /* Changes from flex to block to allow natural wrapping */
+/* Success Box */
+div[data-testid="stNotification"]:has(> div > svg[color="success"]) {
+    border-left: 4px solid #92fe9d !important;
 }
 
-/* 2. Target the paragraph tag inside the button to force wrapping */
-[data-testid="column"] button div p {
-    white-space: normal !important;
-    word-break: break-word !important;
-    text-align: left !important;
-    line-height: 1.4 !important;
-    font-size: 0.9rem !important;
-    margin: 0 !important;
-    overflow: visible !important;
-    display: block !important;
+/* Card hover glow */
+.stMarkdown div[style*="border-radius: 15px"] {
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* 3. Style the "Locked" state to ensure it wraps too */
-[data-testid="column"] button:disabled div p {
-    color: rgba(255, 255, 255, 0.4) !important;
-    white-space: normal !important;
+.stMarkdown div[style*="border-radius: 15px"]:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(79, 172, 254, 0.1) !important;
+    filter: brightness(1.2);
 }
 
-/* Force all buttons in the main column to be large and wrap text */
+/* Force Streamlit column buttons to wrap text properly (Lessons) */
 [data-testid="column"] button {
-    min-height: 80px !important; /* Forces a large default size */
-    padding: 10px !important;
-    white-space: normal !important;
+    height: auto !important;
+    min-height: 60px !important;
+    padding: 12px 16px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-/* Force the text inside the button to wrap and align left */
 [data-testid="column"] button div p {
     white-space: normal !important;
     word-break: break-word !important;
     text-align: left !important;
-    font-size: 14px !important;
-    line-height: 1.2 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.4 !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
 }

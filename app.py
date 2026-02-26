@@ -60,15 +60,16 @@ with st.sidebar:
         # A modern, slim section header
         st.markdown("""
             <div style="
-                background: linear-gradient(90deg, rgba(0, 255, 255, 0.2) 0%, rgba(0, 255, 255, 0) 100%);
-                border-left: 3px solid #00FFFF;
-                padding: 5px 15px;
-                margin: -10px 20px 5px -10px;
-                color: #00FFFF;
-                font-weight: bold;
+                background: linear-gradient(90deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0) 100%);
+                border-left: 3px solid #4facfe;
+                padding: 8px 15px;
+                margin: -10px 20px 15px -10px;
+                color: #e2e8f0;
+                font-weight: 600;
                 letter-spacing: 1px;
                 text-transform: uppercase;
-                font-size: 1.5rem;
+                font-size: 1.2rem;
+                border-radius: 0 10px 10px 0;
             ">
                 📚 My Space
             </div>
@@ -119,16 +120,16 @@ with st.sidebar:
 if st.session_state['course_data'] is None:
     # 1. Centered Header with refined spacing
     st.markdown("""
-        <div style="text-align: center; margin-top: -30px; padding-bottom: 20px;">
-            <h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 0px;">
+        <div style="text-align: center; margin-top: -30px; padding-bottom: 30px;">
+            <h1 class="gradient-text" style="font-size: 4.5rem; margin-bottom: 10px; line-height: 1.1;">
                 AI-demy
             </h1>
-            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                <hr style="flex-grow: 1; border: none; border-top: 1px solid rgba(0, 255, 255, 0.2);">
-                <h4 style="color: #00FFFF; font-weight: 300; margin: 0; white-space: nowrap;">
+            <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+                <hr style="flex-grow: 1; border: none; border-top: 1px solid rgba(255, 255, 255, 0.1); max-width: 200px;">
+                <h4 style="color: #94a3b8; font-weight: 400; margin: 0; white-space: nowrap; font-size: 1.3rem; letter-spacing: 1px;">
                     🎓 Your Personal Knowledge Engine
                 </h4>
-                <hr style="flex-grow: 1; border: none; border-top: 1px solid rgba(0, 255, 255, 0.2);">
+                <hr style="flex-grow: 1; border: none; border-top: 1px solid rgba(255, 255, 255, 0.1); max-width: 200px;">
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -170,7 +171,18 @@ if st.session_state['course_data'] is None:
 
                         # Final update when loop ends
                         status_box.update(label="✅ Course Architected Successfully!", state="complete", expanded=False)
-                        st.rerun()
+                                # Pull the newly created course data from Neo4j to display in the UI
+                    with st.spinner("Loading your personalized classroom..."):
+                        course_data = get_full_course_data(topic_input)
+                        
+                        if course_data:
+                            st.session_state['course_data'] = course_data
+                            st.session_state['selected_module_idx'] = 0
+                            st.session_state['selected_lesson_idx'] = 0
+                            # Re-render the page with the new course data
+                            st.rerun()
+                        else:
+                            st.error("Agents failed to save data to Neo4j. Check console logs.")
     with row2_col2:
         st.warning("🚀 **Step 2:** Click the button to launch agents.")
 
@@ -184,9 +196,9 @@ if st.session_state['course_data'] is None:
 
         with card_col1:
             st.markdown("""
-            <div style="background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 15px; border-left: 5px solid #00C9FF; margin-bottom: 20px; min-height: 180px;">
-    <h4 style="margin:0; color: #00C9FF;">📝 Rich, Easy-to-Read Lessons</h4>
-    <p style="font-size: 1.1rem; color: #D0D0D0; line-height: 1.6;">
+            <div style="background: rgba(255, 255, 255, 0.03); padding: 35px; border-radius: 20px; border-left: 4px solid #4facfe; margin-bottom: 20px; min-height: 220px; transition: all 0.4s ease;">
+    <h4 style="margin:0; margin-bottom: 15px; color: #4facfe; font-weight: 600;">📝 Rich, Easy-to-Read Lessons</h4>
+    <p style="font-size: 1.05rem; color: #94a3b8; line-height: 1.7; font-weight: 300;">
         Our AI acts as your personal researcher, gathering information from trusted sources across the web. 
         It then organizes everything into clear, structured chapters that make learning even the most complex topics feel simple and natural.
     </p>
@@ -195,9 +207,9 @@ if st.session_state['course_data'] is None:
 
         with card_col2:
             st.markdown("""
-            <div style="background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 15px; border-left: 5px solid #92FE9D; margin-bottom: 20px; min-height: 180px;">
-    <h4 style="margin:0; color: #92FE9D;">🎬 Scripts for Your Own Videos</h4>
-    <p style="font-size: 1.1rem; color: #D0D0D0; line-height: 1.6;">
+            <div style="background: rgba(255, 255, 255, 0.03); padding: 35px; border-radius: 20px; border-left: 4px solid #a18cd1; margin-bottom: 20px; min-height: 220px; transition: all 0.4s ease;">
+    <h4 style="margin:0; margin-bottom: 15px; color: #a18cd1; font-weight: 600;">🎬 Scripts for Your Own Videos</h4>
+    <p style="font-size: 1.05rem; color: #94a3b8; line-height: 1.7; font-weight: 300;">
         Want to teach others? Every lesson comes with a ready-made script. 
         Whether you want to record yourself or use an AI video creator, we provide the perfect words and visual cues to help you share your knowledge with the world.
     </p>
@@ -206,9 +218,9 @@ if st.session_state['course_data'] is None:
 
         with card_col3:
             st.markdown("""
-            <div style="background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 15px; border-left: 5px solid #6a11cb; margin-bottom: 20px; min-height: 180px;">
-    <h4 style="margin:0; color: #6a11cb;">🧠 Fun Quizzes to Test Yourself</h4>
-    <p style="font-size: 1.1rem; color: #D0D0D0; line-height: 1.6;">
+            <div style="background: rgba(255, 255, 255, 0.03); padding: 35px; border-radius: 20px; border-left: 4px solid #fbc2eb; margin-bottom: 20px; min-height: 220px; transition: all 0.4s ease;">
+    <h4 style="margin:0; margin-bottom: 15px; color: #fbc2eb; font-weight: 600;">🧠 Fun Quizzes to Test Yourself</h4>
+    <p style="font-size: 1.05rem; color: #94a3b8; line-height: 1.7; font-weight: 300;">
         Learning is better when you know you're making progress. 
         At the end of each lesson, you'll find an interactive quiz designed to check your understanding and help you master the material before moving on to the next exciting topic.
     </p>
@@ -222,7 +234,7 @@ else:
     # Data is loaded - Show the Course Interface
     course = st.session_state['course_data']
     
-    st.markdown(f'<h1 style="color: #00FFFF;"> Course Topic: {course["course_title"]}</h1>', unsafe_allow_html=True)    
+    st.markdown(f'<h1 class="gradient-text" style="font-size: 3rem !important; margin-bottom: 20px;"> Course Topic: {course["course_title"]}</h1>', unsafe_allow_html=True)    
     
     col_nav, col_content = st.columns([0.8, 2.5])
 
@@ -232,7 +244,7 @@ else:
         completed_lessons = [l for l in all_lessons if l.get('completed')]
         progress = len(completed_lessons) / len(all_lessons) if all_lessons else 0
         st.progress(progress)
-        st.markdown(f'<h6 style="color: #ADD8E6 ;margin-top: -10px; margin-bottom: -10px;"> 📈 Course Progress: {int(progress * 100)}%</h6>', unsafe_allow_html=True)    
+        st.markdown(f'<h6 style="color: #94a3b8; font-weight: 400; margin-top: -5px; margin-bottom: 15px; letter-spacing: 0.5px;"> 📈 Course Progress: <span style="color: #4facfe; font-weight: 600;">{int(progress * 100)}%</span></h6>', unsafe_allow_html=True)    
         
         st.markdown(f"### 📚 Curriculum")   
         
@@ -285,14 +297,16 @@ else:
 
             # Wrap entire content in a styled container
             st.markdown(f"""
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; opacity: 0.9;">
-                    <span style="color: #ADD8E6; font-weight: 1000; font-size: 1.2rem;">📦 Module {m_idx + 1}</span>
-                    <span style="color: #444;">/</span>
-                    <span style="color: #00FFFF; font-weight: 1000; font-size: 1.2rem;">📖 Lesson {m_idx + 1}.{l_idx + 1}</span>
-                </div>
-                <div style="margin-bottom: -5px;">
-                    <p style="color: #ADD8E6; font-style: italic; font-size: 1.2rem;">{current_module['title']}</p>
-                    <h4 style="color: #00FFFF;">{current_lesson["title"]}</h4>
+                <div style="background: rgba(255, 255, 255, 0.02); border-radius: 20px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 25px; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                        <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">📦 Module {m_idx + 1}</span>
+                        <span style="color: #475569;">/</span>
+                        <span style="color: #4facfe; font-weight: 600; font-size: 1.1rem;">📖 Lesson {m_idx + 1}.{l_idx + 1}</span>
+                    </div>
+                    <div>
+                        <p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 8px; font-weight: 300;">{current_module['title']}</p>
+                        <h2 style="color: #ffffff; margin: 0; font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px;">{current_lesson["title"]}</h2>
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
             
