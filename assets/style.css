@@ -4,14 +4,21 @@
     color: #FAFAFA;
 }
 
+/* Glassmorphism Effect for containers */
+[data-testid="stVerticalBlock"] > div:has(div.stMarkdown) {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 /* 2. Custom Gradient Title */
 .gradient-text {
-    background: -webkit-linear-gradient(45deg, #7D56F4, #00D4FF);
+    background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-weight: bold;
-    font-size: 3em;
-    padding-bottom: 20px;
+    font-size: 3rem !important;
+    font-weight: 800;
 }
 
 /* 3. Card Styling for Modules */
@@ -55,4 +62,81 @@ div.stButton > button:hover {
 .stTabs [aria-selected="true"] {
     background-color: #7D56F4 !important;
     color: white !important;
+}
+
+button[kind="primary"]:hover {
+    transform: scale(1.02);
+}
+
+/* Styling for the info cards we built in HTML */
+div[style*="background: rgba(255, 255, 255, 0.05)"] {
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+div[style*="background: rgba(255, 255, 255, 0.05)"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    transform: translateX(10px);
+    cursor: default;
+}
+
+/* Fix for standard text to look sharper */
+p, li {
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+}
+
+/* 1. Hide the top-right Streamlit menu and 'Deploy' button to save space */
+/* [data-testid="stHeader"] {
+    display: none !important;
+} */
+
+/* 2. Remove the padding at the top of the main content area */
+.block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 0rem !important;
+}
+
+/* 3. Hide the anchor link icon next to headers (the 🔗) */
+.stMarkdown h1 a, .stMarkdown h2 a, .stMarkdown h3 a {
+    display: none !important;
+}
+
+/* 4. Tighten up the gap between the header and the sidebar top */
+[data-testid="stAppViewContainer"] {
+    padding-top: 0px !important;
+}
+
+
+/* Styling for the Course Navigation Column */
+[data-testid="stVerticalBlock"] > div:has(div.stExpander) {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+/* Make Expanders look like modern cards */
+.streamlit-expanderHeader {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(0, 255, 255, 0.1) !important;
+}
+
+/* Content Container styling */
+.main-content-card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Custom Tab Styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 10px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px 5px 0px 0px;
+    padding: 10px 20px;
 }
