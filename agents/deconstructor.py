@@ -46,7 +46,7 @@ def generate_course_cypher(topic: str) -> str:
     
     ### TASK
     Design a professional, logical curriculum for the topic: "{topic}".
-    The course should have 3 Modules, and each Module should contain 3 Lessons.
+    The course should have 5 Modules, and each Module should contain 5 Lessons.
 
     ### GRAPH SCHEMA REQUIREMENTS
     - **Nodes**:

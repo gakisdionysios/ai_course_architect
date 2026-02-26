@@ -5,11 +5,11 @@ from workflow.workflow import langgraph_app
 from agents.deconstructor import get_full_course_data, get_all_courses, mark_lesson_completed
 
 
-st.set_page_config(page_title="AI Course Architect", layout="wide", page_icon="🎓")
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="AI Course Architect", layout="wide", page_icon="🎓", initial_sidebar_state="expanded")
 
 def load_css(file_name):
-    with open(file_name) as f:
+    # Added encoding="utf-8" to handle special characters and icons
+    with open(file_name, encoding="utf-8") as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 # Load the external CSS file
@@ -54,7 +54,7 @@ with st.sidebar:
                     st.session_state['selected_lesson_idx'] = 0
                     st.rerun()
     
-    st.markdown("---")
+    
     
     
     
@@ -75,11 +75,11 @@ with st.sidebar:
                 for output in langgraph_app.stream(inputs):
                     for node_name, metadata in output.items():
                         if node_name == "deconstructor":
-                            st.write("🏗️ **Deconstructor:** Curriculum skeleton mapped to Neo4j.")
+                            st.write("🏗️ **Course Creator:**Creating Curriculum Content.")
                             status_box.update(label="📚 Researching Knowledge...", state="running")
                             
                         elif node_name == "librarian":
-                            st.write("🔍 **Librarian:** Scouring Wikipedia & ArXiv for facts.")
+                            st.write("🔍 **Librarian:** Scouring Wikipedia & ArXiv & the Web for facts.")
                             status_box.update(label="✍️ Drafting Content...", state="running")
                             
                         elif node_name == "professor":
@@ -105,31 +105,66 @@ with st.sidebar:
 
 # MAIN DISPLAY LOGIC
 if st.session_state['course_data'] is None:
-    # Welcome Screen with Modern Layout
-    st.markdown('<p class="gradient-text">The AI Course Architect</p>', unsafe_allow_html=True)
+    # 1. Centered Header with refined spacing
+    st.markdown("""
+        <div style="text-align: center; margin-top: -30px; padding-bottom: 20px;">
+            <h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 0px;">
+                The AI Course Architect
+            </h1>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                <hr style="flex-grow: 1; border: none; border-top: 1px solid rgba(0, 255, 255, 0.2);">
+                <h4 style="color: #00FFFF; font-weight: 300; margin: 0; white-space: nowrap;">
+                    🎓 Your Personal Knowledge Engine
+                </h4>
+                <hr style="flex-grow: 1; border: none; border-top: 1px solid rgba(0, 255, 255, 0.2);">
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns([1.5, 1.5])
-    with col1:
+    # 2. Main Hero Layout
+    col_left, col_right = st.columns([5, 1])
+
+    with col_left:
+        st.markdown("### 🤖 Your Autonomous Learning Path")
+        st.write("Unlock a fully automated educational experience. Enter a topic, and our multi-agent system orchestrates the entire production pipeline:")
+        
+        # Feature Blocks using Containerized Markdown for a "Card" feel
         st.markdown("""
-        ### 🤖 Transforming Knowledge into Curriculum
-        Welcome to the future of education. This tool uses a swarm of autonomous AI agents to research, structure, and generate complete courses on **any topic** in seconds.
-        """)
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px; border-left: 5px solid #00C9FF; margin-bottom: 15px;">
+            <h4 style="margin:0;">📝 Depth-First Reading Material</h4>
+            <p style="font-size: 0.9rem; color: #D0D0D0;">The <b>Architect</b> maps the curriculum while the <b>Librarian</b> sources facts from ArXiv and Wikipedia to generate comprehensive, structured lessons.</p>
+        </div>
+        
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px; border-left: 5px solid #92FE9D; margin-bottom: 15px;">
+            <h4 style="margin:0;">🎬 Production-Ready Video Scripts</h4>
+            <p style="font-size: 0.9rem; color: #D0D0D0;">The <b>Professor</b> drafts scripts with visual cues. <i>How to use:</i> Paste these into an AI video generator or read them for a micro-learning series.</p>
+        </div>
+        
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px; border-left: 5px solid #6a11cb; margin-bottom: 15px;">
+            <h4 style="margin:0;">🧠 Interactive Knowledge Checks</h4>
+            <p style="font-size: 0.9rem; color: #D0D0D0;">Every lesson includes a logic-verified quiz. Use these to track your progress and ensure mastery before the next module unlocks.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_right:
+        # High-end Robot with Books icon
+        st.image("assets/robot_icon.jpg", use_container_width=True)
+
+    st.markdown("---")
 
 
 else:
     # Data is loaded - Show the Course Interface
     course = st.session_state['course_data']
     
-    st.markdown(f'<h1 style="color: #FAFAFA;">{course["course_title"]}</h1>', unsafe_allow_html=True)
+    st.markdown(f'<h1 style="color: #00FFFF;"> Course Topic: {course["course_title"]}</h1>', unsafe_allow_html=True)
     st.markdown(f"*{course.get('description', 'AI-Generated Professional Curriculum')}*")
-    st.markdown("---")
+    
     
     col_nav, col_content = st.columns([0.8, 2.5])
 
     with col_nav:
-        st.subheader("📚 Curriculum")
-        st.markdown('<div style="margin-top: -20px; margin-bottom: -20px;"><hr></div>', unsafe_allow_html=True)
-        
+        st.subheader("📚 Curriculum")        
         # Calculate overall progress and visualize progress bar
         all_lessons = [l for m in course['modules'] for l in m['lessons']]
         completed_lessons = [l for l in all_lessons if l.get('completed')]
@@ -160,15 +195,17 @@ else:
                     
 
 
-    with col_content:
-        m_idx = st.session_state['selected_module_idx']
-        l_idx = st.session_state['selected_lesson_idx']
-        
-        current_module = course['modules'][m_idx]
-        current_lesson = current_module['lessons'][l_idx]
+        with col_content:
+            m_idx = st.session_state['selected_module_idx']
+            l_idx = st.session_state['selected_lesson_idx']
+            
+            current_module = course['modules'][m_idx]
+            current_lesson = current_module['lessons'][l_idx]
 
-        with st.container():
+            # Wrap entire content in a styled container
+            st.markdown(f"#### Module: {current_module['title']}")
             st.markdown(f"### 📖 {current_lesson['title']}")
+            
             
             tab1, tab2, tab3 = st.tabs(["📝 Reading Material", "🎬 Video Script", "🧠 Interactive Quiz"])
 
@@ -203,13 +240,12 @@ else:
                                     st.success("Correct! 🎉")
                                 else:
                                     st.error(f"Incorrect. The right answer was: {q['answer']}")
-                            st.markdown("---")
+                            
                     except Exception as e:
                         st.warning("Quiz format error. The Professor is still learning!")
                         st.caption(f"Error details: {e}")
                 else:
-                    st.info("No quiz generated for this lesson yet. The Professor Agent might still be writing it.")
-            st.markdown("---")
+                    st.info("No quiz generated for this lesson yet. The Professor Agent might still be writing it.")            
             
             # Completion Button
             if not current_lesson.get('completed'):
@@ -217,8 +253,14 @@ else:
                     mark_lesson_completed(current_lesson['title'])
                     updated_data = get_full_course_data(course["course_title"])
                     st.session_state['course_data'] = updated_data
-                    st.success("Lesson Completed! Next lesson unlocked.")
-                    time.sleep(1) # Give the user a moment to see the success
+                    
+                    # NEW: Check if this was the last lesson for celebration
+                    new_all = [l for m in updated_data['modules'] for l in m['lessons']]
+                    if all(l.get('completed') for l in new_all):
+                        st.balloons()
+                        st.toast("🏆 Congratulations! You've mastered the entire course!", icon="🎓")
+                    else:
+                        st.toast("Lesson Completed! Next one unlocked.", icon="🔓")
+                        
+                    time.sleep(2)
                     st.rerun()
-            else:
-                st.success("🌟 You have finished this lesson!")
