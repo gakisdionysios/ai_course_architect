@@ -146,12 +146,31 @@ if st.session_state['course_data'] is None:
     with row2_col1:
         # Check if already generating to disable button
         is_gen = st.session_state.get('is_generating', False)
-        if st.button("🚀 Generate Course", type="primary", use_container_width=True, disabled=is_gen):
-            if topic_input:
-                # Launch your thread logic here
-                st.session_state['is_generating'] = True
-                st.session_state['generation_logs'] = ["🛸 Deploying AI Agents..."]
-                st.rerun()
+        if st.button("🚀 Generate Course", type="primary",use_container_width=True, disabled=is_gen):
+                if topic_input:
+                    with st.status("🛸 Deploying AI Agents...", expanded=True) as status_box:            
+                    # Prepare inputs for LangGraph
+                        inputs = {"topic": topic_input}
+                        
+                        # Run the graph and stream the node updates
+                        # 'langgraph_app' is the compiled workflow from workflow.py
+                        for output in langgraph_app.stream(inputs):
+                            for node_name, metadata in output.items():
+                                if node_name == "deconstructor":
+                                    st.write("🏗️ **Course Creator:**Creating Curriculum Content.")
+                                    status_box.update(label="📚 Researching Knowledge...", state="running")
+                                    
+                                elif node_name == "librarian":
+                                    st.write("🔍 **Librarian:** Scouring Wikipedia & ArXiv & the Web for facts.")
+                                    status_box.update(label="✍️ Drafting Content...", state="running")
+                                    
+                                elif node_name == "professor":
+                                    st.write("🎓 **Professor:** Generating lessons, scripts, and quizzes.")
+                                    status_box.update(label="✨ Finalizing Course...", state="running")
+
+                        # Final update when loop ends
+                        status_box.update(label="✅ Course Architected Successfully!", state="complete", expanded=False)
+                        st.rerun()
     with row2_col2:
         st.warning("🚀 **Step 2:** Click the button to launch agents.")
 
