@@ -28,7 +28,7 @@ class AgentState(TypedDict):
  
 # Initialize LLM
  
-llm = LlmFactory(mode='azure', temperature=0.5).get_llm()
+llm = LlmFactory(mode='local', temperature=0.5).get_llm()
  
  
  
